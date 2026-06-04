@@ -564,10 +564,9 @@ nav {
 
 <div class="toast" id="toast"></div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, getDocs, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script>
 const firebaseConfig = {
   apiKey: "AIzaSyDhH_fplGM0SYhXYQyGEmSgsxchuUgi43I",
   authDomain: "surajfx2.firebaseapp.com",
@@ -577,25 +576,23 @@ const firebaseConfig = {
   appId: "1:386646596801:web:18bbb81f9d65ab79b28840"
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
 let allPrompts = [];
 let currentPrompt = null;
 let currentFilter = 'all';
 
-// ===== LOAD =====
 async function loadPrompts() {
   try {
-    const snap = await getDocs(collection(db, 'prompts'));
+    const snap = await db.collection('prompts').get();
     allPrompts = snap.docs.map(d => ({ id: d.id, ...d.data() }))
       .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-  } catch (e) { allPrompts = []; }
+  } catch (e) { console.error(e); allPrompts = []; }
   document.getElementById('skeletonGrid').style.display = 'none';
   document.getElementById('promptGrid').style.display = 'grid';
   renderPrompts(allPrompts);
 
-  // Open from URL hash
   const hash = window.location.hash.replace('#', '');
   if (hash) {
     const p = allPrompts.find(x => x.id === hash);
@@ -606,7 +603,7 @@ async function loadPrompts() {
 function renderPrompts(list) {
   const grid = document.getElementById('promptGrid');
   const empty = document.getElementById('emptyState');
-  document.getElementById('countBadge').textContent = `${list.length} prompts`;
+  document.getElementById('countBadge').textContent = list.length + ' prompts';
   if (!list.length) { grid.innerHTML = ''; empty.style.display = 'block'; return; }
   empty.style.display = 'none';
   const liked = JSON.parse(localStorage.getItem('likedPrompts') || '[]');
@@ -635,8 +632,7 @@ function renderPrompts(list) {
   });
 }
 
-// ===== DETAIL PAGE =====
-window.openDetail = (id) => {
+function openDetail(id) {
   const p = allPrompts.find(x => x.id === id);
   if (!p) return;
   currentPrompt = p;
@@ -644,7 +640,7 @@ window.openDetail = (id) => {
   document.getElementById('detailNavTitle').textContent = p.title;
   document.getElementById('detailCategory').textContent = p.category || '';
   document.getElementById('detailTitle').textContent = p.title;
-  document.getElementById('detailAuthor').textContent = `by ${p.author || 'Anonymous'}`;
+  document.getElementById('detailAuthor').textContent = 'by ' + (p.author || 'Anonymous');
   document.getElementById('dLikes').textContent = p.likes || 0;
   document.getElementById('dViews').textContent = p.views || 0;
   document.getElementById('dCopies').textContent = p.copyCount || 0;
@@ -655,17 +651,17 @@ window.openDetail = (id) => {
   else { img.style.display = 'none'; ph.style.display = 'flex'; ph.textContent = p.emoji || '🎨'; }
 
   const liked = JSON.parse(localStorage.getItem('likedPrompts') || '[]');
-  const likeBtn = document.getElementById('detailLikeBtn');
   document.getElementById('detailLikeIcon').textContent = liked.includes(id) ? '❤️' : '🤍';
-  likeBtn.className = 'action-btn' + (liked.includes(id) ? ' liked' : '');
+  document.getElementById('detailLikeBtn').className = 'action-btn' + (liked.includes(id) ? ' liked' : '');
 
+  // Related cards (same category)
   const related = allPrompts.filter(x => x.id !== id && x.category === p.category).slice(0, 3);
   document.getElementById('relatedGrid').innerHTML = related.map(r => `
     <div class="related-card" onclick="openDetail('${r.id}')">
       ${r.imageUrl ? `<img class="related-card-img" src="${r.imageUrl}" loading="lazy">` : `<div class="related-card-ph" style="background:${r.bg||'#11132a'}">${r.emoji||'🎨'}</div>`}
     </div>`).join('');
 
-  // More prompts - YouTube style feed below
+  // More prompts YouTube style
   const moreList = allPrompts.filter(x => x.id !== id).slice(0, 8);
   const likedArr = JSON.parse(localStorage.getItem('likedPrompts') || '[]');
   document.getElementById('morePromptsGrid').innerHTML = moreList.map(m => `
@@ -687,37 +683,39 @@ window.openDetail = (id) => {
   document.body.style.overflow = 'hidden';
   window.location.hash = id;
 
-  // Increment views - only once per device per card
+  // Views - once per device
   const viewedKey = 'viewed_' + id;
   if (!localStorage.getItem(viewedKey)) {
     localStorage.setItem(viewedKey, '1');
-    updateDoc(doc(db, 'prompts', id), { views: increment(1) }).catch(() => {});
+    db.collection('prompts').doc(id).update({ views: firebase.firestore.FieldValue.increment(1) }).catch(() => {});
   }
-};
+}
+window.openDetail = openDetail;
 
-window.closeDetail = () => {
+function closeDetail() {
   document.getElementById('detailOverlay').classList.remove('open');
   document.body.style.overflow = '';
   history.replaceState(null, '', window.location.pathname);
   closePromptSheet();
   closeSharePopup();
-};
+}
+window.closeDetail = closeDetail;
 
-// ===== LIKE =====
-window.quickLike = (id, btn) => {
+function quickLike(id, btn) {
   const liked = JSON.parse(localStorage.getItem('likedPrompts') || '[]');
   if (liked.includes(id)) {
     liked.splice(liked.indexOf(id), 1);
     btn.innerHTML = '🤍'; btn.classList.remove('liked');
   } else {
     liked.push(id); btn.innerHTML = '❤️'; btn.classList.add('liked');
-    updateDoc(doc(db, 'prompts', id), { likes: increment(1) }).catch(() => {});
+    db.collection('prompts').doc(id).update({ likes: firebase.firestore.FieldValue.increment(1) }).catch(() => {});
     showToast('Added to Liked ❤️');
   }
   localStorage.setItem('likedPrompts', JSON.stringify(liked));
-};
+}
+window.quickLike = quickLike;
 
-window.toggleDetailLike = () => {
+function toggleDetailLike() {
   if (!currentPrompt) return;
   const id = currentPrompt.id;
   const liked = JSON.parse(localStorage.getItem('likedPrompts') || '[]');
@@ -732,15 +730,15 @@ window.toggleDetailLike = () => {
     document.getElementById('detailLikeIcon').textContent = '❤️';
     likeBtn.className = 'action-btn liked';
     currentPrompt.likes = (currentPrompt.likes || 0) + 1;
-    updateDoc(doc(db, 'prompts', id), { likes: increment(1) }).catch(() => {});
+    db.collection('prompts').doc(id).update({ likes: firebase.firestore.FieldValue.increment(1) }).catch(() => {});
     showToast('Added to Liked ❤️');
   }
   document.getElementById('dLikes').textContent = currentPrompt.likes;
   localStorage.setItem('likedPrompts', JSON.stringify(liked));
-};
+}
+window.toggleDetailLike = toggleDetailLike;
 
-// ===== PROMPT SHEET =====
-window.openPromptSheet = () => {
+function openPromptSheet() {
   if (!currentPrompt) return;
   const btn = document.querySelector('.get-prompt-btn');
   if (btn) { btn.textContent = '⏳ Loading...'; btn.disabled = true; }
@@ -750,118 +748,113 @@ window.openPromptSheet = () => {
     document.getElementById('promptSheetOverlay').classList.add('open');
     if (btn) { btn.textContent = 'Get Prompt'; btn.disabled = false; }
   }, 200);
-};
-window.closePromptSheet = () => {
-  document.getElementById('promptSheetOverlay').classList.remove('open');
-};
+}
+window.openPromptSheet = openPromptSheet;
 
-window.copyPromptText = (type) => {
+function closePromptSheet() {
+  document.getElementById('promptSheetOverlay').classList.remove('open');
+}
+window.closePromptSheet = closePromptSheet;
+
+function copyPromptText(type) {
   if (!currentPrompt) return;
   const text = type === 'girl' ? currentPrompt.girlPrompt : currentPrompt.boyPrompt;
   navigator.clipboard.writeText(text || '').catch(() => {});
-  if (currentPrompt.id) updateDoc(doc(db, 'prompts', currentPrompt.id), { copyCount: increment(1) }).catch(() => {});
+  if (currentPrompt.id) db.collection('prompts').doc(currentPrompt.id).update({ copyCount: firebase.firestore.FieldValue.increment(1) }).catch(() => {});
   const btn = document.getElementById(type === 'girl' ? 'copyGirlBtn' : 'copyBoyBtn');
   btn.classList.add('copied'); btn.textContent = '✓ Copied!';
   showToast('Prompt copied! 📋');
   setTimeout(() => {
     btn.classList.remove('copied');
-    btn.innerHTML = `📋 Copy ${type === 'girl' ? 'Girl' : 'Boy'} Prompt`;
+    btn.innerHTML = '📋 Copy ' + (type === 'girl' ? 'Girl' : 'Boy') + ' Prompt';
   }, 2000);
   const copies = parseInt(document.getElementById('dCopies').textContent) + 1;
   document.getElementById('dCopies').textContent = copies;
-};
+}
+window.copyPromptText = copyPromptText;
 
-// ===== SHARE =====
-window.openSharePopup = () => {
+function openSharePopup() {
   if (!currentPrompt) return;
-  const url = `${window.location.origin}${window.location.pathname}#${currentPrompt.id}`;
+  const url = window.location.origin + window.location.pathname + '#' + currentPrompt.id;
   document.getElementById('shareLinkUrl').textContent = url;
   document.getElementById('shareOverlay').classList.add('open');
-};
-window.closeSharePopup = () => {
+}
+window.openSharePopup = openSharePopup;
+
+function closeSharePopup() {
   document.getElementById('shareOverlay').classList.remove('open');
-};
+}
+window.closeSharePopup = closeSharePopup;
 
-window.shareToInsta = () => {
-  copyShareLinkSilent();
+function getShareUrl() {
+  if (!currentPrompt) return '';
+  return window.location.origin + window.location.pathname + '#' + currentPrompt.id;
+}
+
+function shareToInsta() {
+  navigator.clipboard.writeText(getShareUrl()).catch(() => {});
   showToast('Link copied! Paste in Instagram 📸');
-  // Try to open Instagram
   window.location.href = 'instagram://';
-  setTimeout(() => {
-    window.open('https://www.instagram.com', '_blank');
-  }, 500);
-};
+  setTimeout(() => window.open('https://www.instagram.com', '_blank'), 500);
+}
+window.shareToInsta = shareToInsta;
 
-window.shareToWhatsApp = () => {
+function shareToWhatsApp() {
   if (!currentPrompt) return;
-  const url = `${window.location.origin}${window.location.pathname}#${currentPrompt.id}`;
-  const text = `Check out this AI prompt: *${currentPrompt.title}*\n${url}`;
-  window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+  window.open('https://wa.me/?text=' + encodeURIComponent('Check out this AI prompt: ' + currentPrompt.title + '\n' + getShareUrl()), '_blank');
   closeSharePopup();
-};
+}
+window.shareToWhatsApp = shareToWhatsApp;
 
-window.shareToTwitter = () => {
+function shareToTwitter() {
   if (!currentPrompt) return;
-  const url = `${window.location.origin}${window.location.pathname}#${currentPrompt.id}`;
-  const text = `Check out this AI prompt: ${currentPrompt.title}`;
-  window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+  window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent('Check out: ' + currentPrompt.title) + '&url=' + encodeURIComponent(getShareUrl()), '_blank');
   closeSharePopup();
-};
+}
+window.shareToTwitter = shareToTwitter;
 
-window.shareMore = () => {
+function shareMore() {
   if (!currentPrompt) return;
-  const url = `${window.location.origin}${window.location.pathname}#${currentPrompt.id}`;
   if (navigator.share) {
-    navigator.share({ title: currentPrompt.title, text: 'Check out this AI prompt!', url });
+    navigator.share({ title: currentPrompt.title, text: 'Check out this AI prompt!', url: getShareUrl() });
   } else {
-    copyShareLinkSilent();
+    navigator.clipboard.writeText(getShareUrl()).catch(() => {});
     showToast('Link copied! 🔗');
   }
   closeSharePopup();
-};
-
-function copyShareLinkSilent() {
-  if (!currentPrompt) return;
-  const url = `${window.location.origin}${window.location.pathname}#${currentPrompt.id}`;
-  navigator.clipboard.writeText(url).catch(() => {});
 }
+window.shareMore = shareMore;
 
-window.copyShareLink = () => {
-  copyShareLinkSilent();
+function copyShareLink() {
+  navigator.clipboard.writeText(getShareUrl()).catch(() => {});
   showToast('Link copied! 🔗');
-};
+}
+window.copyShareLink = copyShareLink;
 
-// ===== FILTER =====
-window.setFilter = (filter) => {
+function setFilter(filter) {
   currentFilter = filter;
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.filter === filter));
-  const titles = {
-    all: 'All Prompts', trending: '🔥 Trending',
-    cinematic: '🎬 Cinematic', '4k': '🌟 4K Image',
-    anime: '🌸 Anime', portrait: '👤 Portrait',
-    fantasy: '🔮 Fantasy', static: '📸 Static'
-  };
+  const titles = { all: 'All Prompts', trending: '🔥 Trending', cinematic: '🎬 Cinematic', '4k': '🌟 4K Image', anime: '🌸 Anime', portrait: '👤 Portrait', fantasy: '🔮 Fantasy', static: '📸 Static' };
   document.getElementById('sectionTitle').textContent = titles[filter] || 'All Prompts';
   let filtered = allPrompts;
   if (filter === 'trending') {
     const now = Date.now();
     const sevenDays = 7 * 24 * 60 * 60 * 1000;
     filtered = [...allPrompts].sort((a, b) => {
-      const aRecent = (a.createdAt?.seconds || 0) * 1000 > now - sevenDays ? (a.copyCount || 0) : 0;
-      const bRecent = (b.createdAt?.seconds || 0) * 1000 > now - sevenDays ? (b.copyCount || 0) : 0;
-      const aScore = aRecent + (a.copyCount || 0) * 0.3 + (a.likes || 0) * 0.2;
-      const bScore = bRecent + (b.copyCount || 0) * 0.3 + (b.likes || 0) * 0.2;
+      const aScore = (a.copyCount||0) + (a.likes||0)*0.5;
+      const bScore = (b.copyCount||0) + (b.likes||0)*0.5;
       return bScore - aScore;
     });
+  } else if (filter !== 'all') {
+    filtered = allPrompts.filter(p => (p.category || '').toLowerCase() === filter || ((p.tags || []).map(t => t.toLowerCase()).includes(filter)));
   }
-  else if (filter !== 'all') filtered = allPrompts.filter(p => (p.category || '').toLowerCase() === filter || (p.tags || []).map(t => t.toLowerCase()).includes(filter));
   renderPrompts(filtered);
   window.scrollTo({ top: 100, behavior: 'smooth' });
-};
+}
+window.setFilter = setFilter;
 
 document.querySelectorAll('.filter-btn').forEach(btn => btn.addEventListener('click', () => setFilter(btn.dataset.filter)));
 
-// ===== SEARCH =====
 document.getElementById('searchInput').addEventListener('input', function () {
   const q = this.value.toLowerCase();
   document.getElementById('searchClear').style.display = q ? 'block' : 'none';
@@ -878,17 +871,16 @@ document.getElementById('searchClear').addEventListener('click', () => {
   renderPrompts(allPrompts);
 });
 
-// ===== TOAST =====
-window.showToast = (msg) => {
+function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg; t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2500);
-};
+}
+window.showToast = showToast;
 
-// Back button
 window.addEventListener('popstate', () => {
   const d = document.getElementById('detailOverlay');
-  if (d.classList.contains('open')) { closeDetail(); }
+  if (d.classList.contains('open')) closeDetail();
 });
 
 loadPrompts();
