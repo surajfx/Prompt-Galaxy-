@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Liked Prompts — Prompt Galaxy</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #08080f; --surface: #0f1020; --card: #11132a;
+  --border: rgba(255,255,255,0.07); --text: #f0f0ff; --muted: #5a5a80;
+  --accent: #FFE234; --r: #ff3a6e;
+}
+body { background: var(--bg); color: var(--text); font-family: 'Outfit', sans-serif; min-height: 100vh; padding-bottom: 90px; }
+body::before {
+  content: ''; position: fixed; inset: 0;
+  background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(255,58,110,0.1) 0%, transparent 60%);
+  pointer-events: none; z-index: 0;
+}
+
+nav { position: sticky; top: 0; z-index: 200; height: 58px; padding: 0 16px; display: flex; align-items: center; justify-content: space-between; background: rgba(8,8,15,0.9); backdrop-filter: blur(24px); border-bottom: 1px solid var(--border); }
+.nav-logo { display: flex; align-items: center; gap: 9px; text-decoration: none; }
+.nav-logo-icon { width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(135deg, #b44dff, #00b4ff); display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 16px; color: #fff; }
+.nav-logo-text { font-weight: 800; font-size: 16px; background: linear-gradient(90deg, #b44dff, #00b4ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+.page-header { padding: 24px 16px 8px; position: relative; z-index: 1; }
+.page-title { font-weight: 800; font-size: 26px; margin-bottom: 4px; display: flex; align-items: center; gap: 10px; }
+.page-title span { color: var(--r); }
+.page-sub { font-size: 13px; color: var(--muted); }
+
+.section { padding: 16px 12px; position: relative; z-index: 1; }
+.grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+@media (min-width: 560px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; cursor: pointer; transition: all 0.28s ease; opacity: 0; }
+.card.visible { animation: cardPop 0.5s cubic-bezier(0.22,1,0.36,1) forwards; }
+@keyframes cardPop { from { opacity:0; transform: translateY(18px) scale(0.96); } to { opacity:1; transform: translateY(0) scale(1); } }
+.card:hover { transform: translateY(-4px); border-color: rgba(255,58,110,0.3); box-shadow: 0 12px 32px rgba(255,58,110,0.12); }
+.card-img-wrap { position: relative; aspect-ratio: 3/4; overflow: hidden; background: var(--surface); }
+.card-img { width:100%; height:100%; object-fit:cover; transition: transform 0.4s; display:block; }
+.card:hover .card-img { transform: scale(1.06); }
+.card-img-placeholder { width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:40px; }
+.card-category-tag { position: absolute; top: 8px; left: 8px; background: rgba(0,0,0,0.65); backdrop-filter: blur(8px); font-size: 9px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; padding: 3px 7px; border-radius: 5px; color: var(--accent); }
+.card-unlike-btn { position: absolute; top: 8px; right: 8px; width: 28px; height: 28px; background: rgba(255,50,50,0.25); border: 1px solid var(--r); border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 13px; }
+.card-body { padding: 10px; }
+.card-title { font-weight: 600; font-size: 12px; margin-bottom: 8px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.card-meta { display: flex; align-items: center; justify-content: space-between; }
+.card-stats { display: flex; gap: 7px; font-size: 10px; color: var(--muted); font-family: 'Space Mono', monospace; }
+.see-btn { background: rgba(255,58,110,0.1); border: 1px solid rgba(255,58,110,0.25); color: var(--r); padding: 4px 9px; font-size: 10px; font-weight: 700; cursor: pointer; border-radius: 6px; }
+
+.empty-state { text-align: center; padding: 70px 20px; position: relative; z-index: 1; }
+.empty-icon { font-size: 56px; margin-bottom: 16px; }
+.empty-title { font-weight: 800; font-size: 20px; margin-bottom: 8px; }
+.empty-sub { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+.go-explore-btn { display: inline-block; background: var(--accent); color: #000; padding: 13px 28px; border-radius: 14px; font-weight: 700; font-size: 14px; text-decoration: none; }
+
+/* DETAIL */
+.detail-overlay { position: fixed; inset: 0; z-index: 400; background: var(--bg); overflow-y: auto; transform: translateX(100%); transition: transform 0.35s cubic-bezier(0.22,1,0.36,1); }
+.detail-overlay.open { transform: translateX(0); }
+.detail-nav { position: sticky; top: 0; z-index: 10; height: 56px; padding: 0 16px; display: flex; align-items: center; gap: 12px; background: rgba(8,8,15,0.9); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+.detail-back { width: 36px; height: 36px; border-radius: 10px; background: rgba(255,255,255,0.07); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; }
+.detail-nav-title { font-weight: 700; font-size: 15px; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.detail-img-wrap { width: 100%; aspect-ratio: 4/3; overflow: hidden; background: var(--surface); display: flex; align-items: center; justify-content: center; }
+.detail-img { width:100%; height:100%; object-fit:cover; }
+.detail-body { padding: 20px 16px 100px; }
+.detail-category { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+.detail-title { font-weight: 800; font-size: 22px; line-height: 1.3; margin-bottom: 6px; }
+.detail-author { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
+.detail-stats { display: flex; gap: 16px; margin-bottom: 20px; padding: 12px 16px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 14px; }
+.detail-stat { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); font-family: 'Space Mono', monospace; }
+.detail-stat span { color: var(--text); font-weight: 600; }
+.get-prompt-btn { width: 100%; padding: 18px; background: rgba(255,255,255,0.05); border: 1.5px solid rgba(255,255,255,0.1); border-radius: 16px; color: var(--text); font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 17px; cursor: pointer; transition: all 0.2s; margin-bottom: 14px; }
+.detail-actions { display: flex; gap: 10px; margin-bottom: 24px; }
+.action-btn { flex: 1; padding: 14px 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 14px; color: var(--text); font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.action-btn.liked { background: rgba(255,58,110,0.15); border-color: var(--r); color: var(--r); }
+.action-btn.share-btn { background: rgba(0,180,255,0.08); border-color: rgba(0,180,255,0.25); color: #00b4ff; }
+
+/* SHEETS */
+.prompt-sheet-overlay, .share-overlay { position: fixed; inset: 0; z-index: 500; background: rgba(0,0,0,0.75); backdrop-filter: blur(12px); display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+.prompt-sheet-overlay.open, .share-overlay.open { opacity: 1; pointer-events: all; }
+.prompt-sheet, .share-sheet { background: #13141f; border: 1px solid rgba(255,255,255,0.09); border-radius: 24px 24px 0 0; width: 100%; max-width: 520px; padding: 0 0 36px; transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.22,1,0.36,1); max-height: 92vh; overflow-y: auto; }
+.share-sheet { padding: 0 20px 36px; }
+.prompt-sheet-overlay.open .prompt-sheet, .share-overlay.open .share-sheet { transform: translateY(0); }
+.sheet-drag { width: 40px; height: 4px; border-radius: 4px; background: rgba(255,255,255,0.12); margin: 14px auto 20px; }
+.sheet-title { font-weight: 800; font-size: 17px; padding: 0 20px 16px; }
+.prompt-version-card { margin: 0 16px 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; }
+.pvc-header { display: flex; align-items: center; gap: 8px; padding: 14px 16px 10px; font-weight: 700; font-size: 14px; }
+.copy-prompt-btn { width: calc(100% - 32px); margin: 0 16px 8px; padding: 14px; border: none; border-radius: 12px; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 14px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 7px; }
+.copy-girl { background: linear-gradient(135deg, #ff4dce, #b44dff); color: #fff; }
+.copy-boy { background: linear-gradient(135deg, #00b4ff, #b44dff); color: #fff; }
+.copy-prompt-btn.copied { background: linear-gradient(135deg, #00e57d, #00b4ff); }
+.prompt-text-preview { padding: 0 16px 14px; font-family: 'Space Mono', monospace; font-size: 11px; color: var(--muted); line-height: 1.7; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+
+.share-apps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+.share-app { display: flex; flex-direction: column; align-items: center; gap: 7px; cursor: pointer; transition: all 0.2s; }
+.share-app:active { transform: scale(0.92); }
+.share-app-icon { width: 56px; height: 56px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 28px; border: 1px solid rgba(255,255,255,0.08); }
+.share-app-label { font-size: 11px; font-weight: 600; color: var(--muted); text-align: center; }
+.share-app-insta .share-app-icon { background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+.share-app-whatsapp .share-app-icon { background: #25d366; }
+.share-app-twitter .share-app-icon { background: #000; border-color: rgba(255,255,255,0.15); }
+.share-app-more .share-app-icon { background: rgba(255,255,255,0.06); }
+.share-link-row { display: flex; gap: 8px; align-items: center; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; margin-bottom: 14px; }
+.share-link-url { flex: 1; font-size: 12px; font-family: 'Space Mono', monospace; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.share-copy-link-btn { background: var(--accent); color: #000; border: none; padding: 7px 14px; border-radius: 8px; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 12px; cursor: pointer; }
+.share-close-btn { width: 100%; padding: 15px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 14px; color: var(--muted); font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 14px; cursor: pointer; }
+
+.toast { position: fixed; bottom: 96px; left: 50%; transform: translateX(-50%) translateY(20px); background: rgba(255,255,255,0.1); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.15); color: var(--text); padding: 12px 20px; border-radius: 100px; font-size: 13px; font-weight: 600; white-space: nowrap; opacity: 0; transition: all 0.3s; z-index: 700; pointer-events: none; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 300; background: rgba(11,11,20,0.97); backdrop-filter: blur(28px); border-top: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: space-around; padding: 10px 10px 18px; height: 80px; }
+.nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; transition: all 0.2s; text-decoration: none; flex: 1; }
+.nav-item-icon { width: 44px; height: 44px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #555580; }
+.nav-item.active .nav-item-icon { background: var(--accent); color: #000; box-shadow: 0 4px 16px rgba(255,226,52,0.35); }
+.nav-item-label { font-size: 11px; font-weight: 700; color: var(--muted); }
+.nav-item.active .nav-item-label { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <div class="nav-logo-icon">✦</div>
+    <div class="nav-logo-text">Prompt Galaxy</div>
+  </a>
+</nav>
+
+<div class="page-header">
+  <div class="page-title">Liked <span>❤️</span></div>
+  <div class="page-sub" id="likedSub">Your saved prompts</div>
+</div>
+
+<div class="section">
+  <div class="grid" id="likedGrid"></div>
+  <div class="empty-state" id="emptyState" style="display:none">
+    <div class="empty-icon">🤍</div>
+    <div class="empty-title">No liked prompts yet</div>
+    <div class="empty-sub">Tap the heart on any prompt to save it here</div>
+    <a href="index.html" class="go-explore-btn">Explore Prompts</a>
+  </div>
+</div>
+
+<!-- DETAIL OVERLAY -->
+<div class="detail-overlay" id="detailOverlay">
+  <div class="detail-nav">
+    <div class="detail-back" onclick="closeDetail()">←</div>
+    <div class="detail-nav-title" id="detailNavTitle"></div>
+  </div>
+  <div class="detail-img-wrap">
+    <img class="detail-img" id="detailImg" src="" alt="" style="display:none">
+    <div id="detailImgPh" style="font-size:80px;display:flex;align-items:center;justify-content:center;width:100%;height:100%;"></div>
+  </div>
+  <div class="detail-body">
+    <div class="detail-category" id="detailCategory"></div>
+    <div class="detail-title" id="detailTitle"></div>
+    <div class="detail-author" id="detailAuthor"></div>
+    <div class="detail-stats">
+      <div class="detail-stat">❤️ <span id="dLikes">0</span></div>
+      <div class="detail-stat">👁️ <span id="dViews">0</span></div>
+      <div class="detail-stat">📋 <span id="dCopies">0</span></div>
+    </div>
+    <button class="get-prompt-btn" onclick="openPromptSheet()">Get Prompt</button>
+    <div class="detail-actions">
+      <button class="action-btn liked" id="detailLikeBtn" onclick="toggleDetailLike()"><span id="detailLikeIcon">❤️</span> Unlike</button>
+      <button class="action-btn share-btn" onclick="openSharePopup()">🔗 Share</button>
+    </div>
+  </div>
+</div>
+
+<!-- PROMPT SHEET -->
+<div class="prompt-sheet-overlay" id="promptSheetOverlay" onclick="if(event.target===this)closePromptSheet()">
+  <div class="prompt-sheet">
+    <div class="sheet-drag"></div>
+    <div class="sheet-title">Get Prompt</div>
+    <div class="prompt-version-card"><div class="pvc-header">👩 Girl Version</div><div class="prompt-text-preview" id="girlPreview"></div></div>
+    <button class="copy-prompt-btn copy-girl" id="copyGirlBtn" onclick="copyPromptText('girl')">📋 Copy Girl Prompt</button>
+    <div class="prompt-version-card" style="margin-top:4px"><div class="pvc-header">👨 Boy Version</div><div class="prompt-text-preview" id="boyPreview"></div></div>
+    <button class="copy-prompt-btn copy-boy" id="copyBoyBtn" onclick="copyPromptText('boy')">📋 Copy Boy Prompt</button>
+  </div>
+</div>
+
+<!-- SHARE -->
+<div class="share-overlay" id="shareOverlay" onclick="if(event.target===this)closeSharePopup()">
+  <div class="share-sheet">
+    <div class="sheet-drag"></div>
+    <div class="share-title">Share Prompt</div>
+    <div class="share-apps">
+      <div class="share-app share-app-insta" onclick="shareToInsta()"><div class="share-app-icon">📸</div><div class="share-app-label">Instagram</div></div>
+      <div class="share-app share-app-whatsapp" onclick="shareToWhatsApp()"><div class="share-app-icon">💬</div><div class="share-app-label">WhatsApp</div></div>
+      <div class="share-app share-app-twitter" onclick="shareToTwitter()"><div class="share-app-icon" style="color:#fff">𝕏</div><div class="share-app-label">Twitter/X</div></div>
+      <div class="share-app share-app-more" onclick="shareMore()"><div class="share-app-icon">⬆️</div><div class="share-app-label">More</div></div>
+    </div>
+    <div class="share-link-row">
+      <div class="share-link-url" id="shareLinkUrl"></div>
+      <button class="share-copy-link-btn" onclick="copyShareLink()">Copy</button>
+    </div>
+    <button class="share-close-btn" onclick="closeSharePopup()">Cancel</button>
+  </div>
+</div>
+
+<div class="bottom-nav">
+  <a class="nav-item" href="index.html"><div class="nav-item-icon">🏠</div><div class="nav-item-label">Home</div></a>
+  <a class="nav-item" href="collections.html"><div class="nav-item-icon">⊞</div><div class="nav-item-label">Collections</div></a>
+  <a class="nav-item" href="explore.html"><div class="nav-item-icon">⊡</div><div class="nav-item-label">Explore</div></a>
+  <a class="nav-item active" href="liked.html"><div class="nav-item-icon">♥</div><div class="nav-item-label">Liked</div></a>
+</div>
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, getDocs, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDhH_fplGM0SYhXYQyGEmSgsxchuUgi43I",
+  authDomain: "surajfx2.firebaseapp.com",
+  projectId: "surajfx2",
+  storageBucket: "surajfx2.firebasestorage.app",
+  messagingSenderId: "386646596801",
+  appId: "1:386646596801:web:18bbb81f9d65ab79b28840"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+let allPrompts = [];
+let likedPrompts = [];
+let currentPrompt = null;
+
+async function loadLiked() {
+  const likedIds = JSON.parse(localStorage.getItem('likedPrompts') || '[]');
+  if (!likedIds.length) { document.getElementById('emptyState').style.display = 'block'; return; }
+  try {
+    const snap = await getDocs(collection(db, 'prompts'));
+    allPrompts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  } catch(e) { allPrompts = []; }
+  likedPrompts = allPrompts.filter(p => likedIds.includes(p.id));
+  document.getElementById('likedSub').textContent = `${likedPrompts.length} saved prompt${likedPrompts.length !== 1 ? 's' : ''}`;
+  renderLiked();
+}
+
+function renderLiked() {
+  const grid = document.getElementById('likedGrid');
+  if (!likedPrompts.length) { document.getElementById('emptyState').style.display = 'block'; grid.innerHTML = ''; return; }
+  document.getElementById('emptyState').style.display = 'none';
+  grid.innerHTML = likedPrompts.map(p => `
+    <div class="card" onclick="openDetail('${p.id}')">
+      <div class="card-img-wrap">
+        ${p.imageUrl ? `<img class="card-img" src="${p.imageUrl}" loading="lazy">` : `<div class="card-img-placeholder" style="background:${p.bg||'#11132a'}">${p.emoji||'🎨'}</div>`}
+        <div class="card-category-tag">${p.category||'Prompt'}</div>
+        <div class="card-unlike-btn" onclick="event.stopPropagation();unlikeCard('${p.id}')">❤️</div>
+      </div>
+      <div class="card-body">
+        <div class="card-title">${p.title}</div>
+        <div class="card-meta">
+          <div class="card-stats"><span>❤️ ${p.likes||0}</span><span>📋 ${p.copyCount||0}</span></div>
+          <div class="see-btn">View</div>
+        </div>
+      </div>
+    </div>`).join('');
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.card').forEach((c,i) => setTimeout(() => c.classList.add('visible'), i*40));
+  });
+}
+
+window.unlikeCard = (id) => {
+  const liked = JSON.parse(localStorage.getItem('likedPrompts') || '[]');
+  const idx = liked.indexOf(id);
+  if (idx > -1) liked.splice(idx, 1);
+  localStorage.setItem('likedPrompts', JSON.stringify(liked));
+  likedPrompts = likedPrompts.filter(p => p.id !== id);
+  document.getElementById('likedSub').textContent = `${likedPrompts.length} saved prompt${likedPrompts.length !== 1 ? 's' : ''}`;
+  renderLiked();
+  showToast('Removed from Liked');
+};
+
+window.openDetail = (id) => {
+  const p = allPrompts.find(x => x.id === id);
+  if (!p) return;
+  currentPrompt = p;
+  document.getElementById('detailNavTitle').textContent = p.title;
+  document.getElementById('detailCategory').textContent = p.category || '';
+  document.getElementById('detailTitle').textContent = p.title;
+  document.getElementById('detailAuthor').textContent = `by ${p.author || 'Anonymous'}`;
+  document.getElementById('dLikes').textContent = p.likes || 0;
+  document.getElementById('dViews').textContent = p.views || 0;
+  document.getElementById('dCopies').textContent = p.copyCount || 0;
+  const img = document.getElementById('detailImg');
+  const ph = document.getElementById('detailImgPh');
+  if (p.imageUrl) { img.src = p.imageUrl; img.style.display = 'block'; ph.style.display = 'none'; }
+  else { img.style.display = 'none'; ph.style.display = 'flex'; ph.textContent = p.emoji || '🎨'; }
+  document.getElementById('detailOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  updateDoc(doc(db, 'prompts', id), { views: increment(1) }).catch(() => {});
+};
+
+window.closeDetail = () => {
+  document.getElementById('detailOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+  closePromptSheet(); closeSharePopup();
+};
+
+window.toggleDetailLike = () => {
+  if (!currentPrompt) return;
+  unlikeCard(currentPrompt.id);
+  closeDetail();
+};
+
+window.openPromptSheet = () => {
+  if (!currentPrompt) return;
+  document.getElementById('girlPreview').textContent = currentPrompt.girlPrompt || 'No girl prompt added.';
+  document.getElementById('boyPreview').textContent = currentPrompt.boyPrompt || 'No boy prompt added.';
+  document.getElementById('promptSheetOverlay').classList.add('open');
+};
+window.closePromptSheet = () => { document.getElementById('promptSheetOverlay').classList.remove('open'); };
+
+window.copyPromptText = (type) => {
+  if (!currentPrompt) return;
+  const text = type === 'girl' ? currentPrompt.girlPrompt : currentPrompt.boyPrompt;
+  navigator.clipboard.writeText(text || '').catch(() => {});
+  if (currentPrompt.id) updateDoc(doc(db, 'prompts', currentPrompt.id), { copyCount: increment(1) }).catch(() => {});
+  const btn = document.getElementById(type === 'girl' ? 'copyGirlBtn' : 'copyBoyBtn');
+  btn.classList.add('copied'); btn.textContent = '✓ Copied!';
+  showToast('Prompt copied! 📋');
+  setTimeout(() => { btn.classList.remove('copied'); btn.innerHTML = `📋 Copy ${type==='girl'?'Girl':'Boy'} Prompt`; }, 2000);
+};
+
+window.openSharePopup = () => {
+  if (!currentPrompt) return;
+  const url = `${location.origin}/index.html#${currentPrompt.id}`;
+  document.getElementById('shareLinkUrl').textContent = url;
+  document.getElementById('shareOverlay').classList.add('open');
+};
+window.closeSharePopup = () => { document.getElementById('shareOverlay').classList.remove('open'); };
+
+function getShareUrl() { return currentPrompt ? `${location.origin}/index.html#${currentPrompt.id}` : ''; }
+window.shareToInsta = () => { navigator.clipboard.writeText(getShareUrl()).catch(()=>{}); showToast('Link copied! Paste in Instagram 📸'); window.location.href='instagram://'; setTimeout(()=>window.open('https://www.instagram.com','_blank'),500); };
+window.shareToWhatsApp = () => { if(!currentPrompt)return; window.open(`https://wa.me/?text=${encodeURIComponent(currentPrompt.title+'\n'+getShareUrl())}`, '_blank'); closeSharePopup(); };
+window.shareToTwitter = () => { if(!currentPrompt)return; window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(currentPrompt.title)}&url=${encodeURIComponent(getShareUrl())}`, '_blank'); closeSharePopup(); };
+window.shareMore = () => { if(navigator.share){navigator.share({title:currentPrompt?.title,url:getShareUrl()});}else{navigator.clipboard.writeText(getShareUrl()).catch(()=>{}); showToast('Link copied!');} closeSharePopup(); };
+window.copyShareLink = () => { navigator.clipboard.writeText(getShareUrl()).catch(()=>{}); showToast('Link copied! 🔗'); };
+
+window.showToast = (msg) => {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+};
+
+loadLiked();
+</script>
+</body>
+</html>
