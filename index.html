@@ -192,48 +192,6 @@ nav{position:sticky;top:0;z-index:200;height:58px;padding:0 16px;display:flex;al
 .toast{position:fixed;bottom:96px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(255,255,255,0.1);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.15);color:var(--text);padding:12px 20px;border-radius:100px;font-size:13px;font-weight:600;white-space:nowrap;opacity:0;transition:all 0.3s;z-index:700;pointer-events:none}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-/* FREE BADGE + THREE DOT */
-.nav-right{display:flex;align-items:center;gap:8px}
-.free-badge{background:linear-gradient(135deg,#00e57d,#00b4ff);color:#000;font-size:10px;font-weight:800;letter-spacing:1.5px;padding:4px 9px;border-radius:100px}
-.three-dot-btn{width:32px;height:32px;border-radius:9px;background:rgba(255,255,255,0.07);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;color:var(--text);position:relative}
-
-/* THREE DOT DROPDOWN */
-.dot-menu{position:absolute;top:44px;right:0;background:#13141f;border:1px solid rgba(255,255,255,0.12);border-radius:16px;padding:8px;min-width:190px;z-index:600;box-shadow:0 12px 40px rgba(0,0,0,0.6);opacity:0;pointer-events:none;transform:translateY(-8px) scale(0.96);transition:all 0.2s;transform-origin:top right}
-.dot-menu.open{opacity:1;pointer-events:all;transform:translateY(0) scale(1)}
-.dot-menu-item{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text);transition:background 0.15s}
-.dot-menu-item:hover{background:rgba(255,255,255,0.06)}
-.dot-menu-item .mi{font-size:16px}
-
-/* PAGE OVERLAY (Privacy, Terms, etc.) */
-.page-overlay{position:fixed;inset:0;z-index:800;background:var(--bg);overflow-y:auto;transform:translateX(100%);transition:transform 0.35s cubic-bezier(0.22,1,0.36,1)}
-.page-overlay.open{transform:translateX(0)}
-.page-nav{position:sticky;top:0;z-index:10;height:56px;padding:0 16px;display:flex;align-items:center;gap:12px;background:rgba(8,8,15,0.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
-.page-back{width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,0.07);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;color:var(--text)}
-.page-nav-title{font-weight:700;font-size:15px}
-.page-body{padding:24px 20px 80px;max-width:640px;margin:0 auto}
-.page-body h2{font-size:20px;font-weight:800;margin-bottom:8px;margin-top:24px;color:var(--text)}
-.page-body h2:first-child{margin-top:0}
-.page-body p{font-size:13px;line-height:1.8;color:var(--muted);margin-bottom:12px}
-.page-body a{color:var(--b)}
-
-/* AI TOOL SHEET */
-.ai-tool-box{background:#13141f;border:1px solid rgba(255,255,255,0.09);border-radius:24px 24px 0 0;width:100%;max-width:520px;padding:0 20px 40px;transform:translateY(100%);transition:transform 0.35s cubic-bezier(0.22,1,0.36,1)}
-.sheet-overlay.open .ai-tool-box{transform:translateY(0)}
-.ai-tool-item{display:flex;align-items:center;gap:14px;padding:16px 14px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:16px;cursor:pointer;margin-bottom:10px;transition:all 0.2s}
-.ai-tool-item:hover{background:rgba(255,255,255,0.08);border-color:rgba(180,77,255,0.3)}
-.ai-tool-icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
-.ai-tool-info{flex:1}
-.ai-tool-name{font-weight:700;font-size:15px;margin-bottom:2px}
-.ai-tool-sub{font-size:11px;color:#00b4ff}
-.ai-tool-arrow{font-size:18px;color:var(--muted)}
-
-/* GETTING LOADING */
-.getting-overlay{position:fixed;inset:0;z-index:600;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.2s}
-.getting-overlay.show{opacity:1;pointer-events:all}
-.getting-box{background:#13141f;border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:28px 36px;display:flex;align-items:center;gap:14px;font-size:16px;font-weight:700}
-@keyframes spin{to{transform:rotate(360deg)}}
-.spin-icon{width:22px;height:22px;border:3px solid rgba(255,255,255,0.15);border-top-color:#b44dff;border-radius:50%;animation:spin 0.7s linear infinite}
-
 /* BOTTOM NAV */
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:300;background:rgba(11,11,20,0.97);backdrop-filter:blur(28px);border-top:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:space-around;padding:10px 10px 18px;height:80px}
 .nav-item{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;transition:all 0.2s;text-decoration:none;flex:1}
@@ -250,38 +208,6 @@ nav{position:sticky;top:0;z-index:200;height:58px;padding:0 16px;display:flex;al
     <div class="nav-logo-icon">✦</div>
     <div class="nav-logo-text">Prompt Galaxy</div>
   </a>
-  <div class="nav-right">
-    <div class="free-badge">FREE</div>
-    <div class="three-dot-btn" id="threeDotBtn">⋮
-      <div class="dot-menu" id="dotMenu">
-        <div class="dot-menu-item" onclick="openPage('privacy')"><span class="mi">🔒</span> Privacy Policy</div>
-        <div class="dot-menu-item" onclick="openPage('terms')"><span class="mi">📄</span> Terms of Service</div>
-        <div class="dot-menu-item" onclick="openPage('about')"><span class="mi">👥</span> About / Team</div>
-        <div class="dot-menu-item" onclick="openPage('contact')"><span class="mi">📬</span> Contact</div>
-        <div style="height:1px;background:rgba(255,255,255,0.08);margin:6px 0"></div>
-        <div class="dot-menu-item" onclick="window.open('https://www.instagram.com/surajfx2.0?igsh=ZHBzZzB5OTgzb2k=','_blank')">
-          <span class="mi social-ig">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><defs><radialGradient id="ig1" r="150%" cx="30%" cy="107%"><stop offset="0%" stop-color="#fdf497"/><stop offset="5%" stop-color="#fdf497"/><stop offset="45%" stop-color="#fd5949"/><stop offset="60%" stop-color="#d6249f"/><stop offset="90%" stop-color="#285AEB"/></radialGradient></defs><rect width="24" height="24" rx="5" fill="url(#ig1)"/><circle cx="12" cy="12" r="4.5" stroke="white" stroke-width="1.8" fill="none"/><circle cx="17.5" cy="6.5" r="1.2" fill="white"/></svg>
-          </span> Instagram
-        </div>
-        <div class="dot-menu-item" onclick="window.open('https://whatsapp.com/channel/0029Vb7kmU01iUxbBWiGNp1A','_blank')">
-          <span class="mi">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="#25d366"><rect width="24" height="24" rx="5" fill="#25d366"/><path d="M12 4C7.58 4 4 7.58 4 12c0 1.49.41 2.87 1.11 4.07L4 20l4.07-1.07A7.94 7.94 0 0012 20c4.42 0 8-3.58 8-8s-3.58-8-8-8zm3.85 11.1c-.16.45-.93.87-1.28.92-.35.05-.68.23-2.29-.48-1.95-.85-3.2-2.83-3.3-2.96-.1-.13-.81-1.08-.81-2.06 0-.98.51-1.46.7-1.66.19-.2.41-.25.55-.25h.39c.13 0 .3-.05.47.36.17.42.58 1.41.63 1.51.05.1.08.22.02.35-.06.13-.1.21-.19.33-.1.11-.2.25-.29.34-.1.1-.2.2-.08.4.11.19.5.83 1.08 1.34.74.66 1.37.87 1.56.96.2.09.31.08.43-.05.12-.13.51-.6.65-.8.14-.21.28-.17.47-.1.19.07 1.2.57 1.4.67.21.1.35.15.4.23.05.1.05.54-.11.99z" fill="white"/></svg>
-          </span> WhatsApp
-        </div>
-        <div class="dot-menu-item" onclick="window.open('https://t.me/surajfx20','_blank')">
-          <span class="mi">
-            <svg width="16" height="16" viewBox="0 0 24 24"><rect width="24" height="24" rx="5" fill="#29b6f6"/><path d="M5 12l3.5 1.5L10 17l2-2.5 4 2.5 2-9-13 4zm3.5 1.5l5.5-3.5-4 5" fill="none" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><path d="M5 12l13-4-2 9-4-2.5-2 2.5-1.5-3.5L5 12z" fill="white" opacity="0.9"/></svg>
-          </span> Telegram
-        </div>
-        <div class="dot-menu-item" onclick="window.open('https://youtube.com/@surajfx2.0?si=280RDeoLouE91Lol','_blank')">
-          <span class="mi">
-            <svg width="16" height="16" viewBox="0 0 24 24"><rect width="24" height="24" rx="5" fill="#ff0000"/><path d="M19.6 8.2s-.2-1.3-.8-1.9c-.7-.8-1.5-.8-1.9-.8C14.8 5.4 12 5.4 12 5.4s-2.8 0-4.9.1c-.4 0-1.2.1-1.9.8-.6.6-.8 1.9-.8 1.9S4.2 9.6 4.2 11v1.3c0 1.4.2 2.8.2 2.8s.2 1.3.8 1.9c.7.8 1.7.7 2.1.8 1.5.1 6.7.2 6.7.2s2.8 0 4.9-.2c.4 0 1.2-.1 1.9-.8.6-.6.8-1.9.8-1.9s.2-1.4.2-2.8V11c0-1.4-.2-2.8-.2-2.8zM10.2 14.4V9.5l5.1 2.5-5.1 2.4z" fill="white"/></svg>
-          </span> YouTube
-        </div>
-      </div>
-    </div>
-  </div>
 </nav>
 
 <div class="search-section">
@@ -352,11 +278,6 @@ nav{position:sticky;top:0;z-index:200;height:58px;padding:0 16px;display:flex;al
   </div>
 </div>
 
-<!-- GETTING LOADING OVERLAY -->
-<div class="getting-overlay" id="gettingOverlay">
-  <div class="getting-box"><div class="spin-icon"></div> Getting...</div>
-</div>
-
 <!-- PROMPT SHEET -->
 <div class="sheet-overlay" id="promptOverlay">
   <div class="sheet-box">
@@ -372,70 +293,7 @@ nav{position:sticky;top:0;z-index:200;height:58px;padding:0 16px;display:flex;al
       <div class="pvc-text" id="boyText"></div>
     </div>
     <button class="copy-btn copy-boy" id="copyBoyBtn">📋 Copy Boy Prompt</button>
-    <button class="copy-btn" id="openAiToolBtn" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:var(--text);margin-top:6px">🤖 Open AI Tool</button>
   </div>
-</div>
-
-<!-- GENDER SELECT POPUP (before AI tool) -->
-<div class="sheet-overlay" id="genderOverlay">
-  <div class="ai-tool-box">
-    <div class="sheet-drag"></div>
-    <div class="sheet-title" style="padding:0 0 6px">Choose Version</div>
-    <p style="font-size:12px;color:var(--muted);padding:0 0 16px">Which prompt do you want to open?</p>
-    <div class="ai-tool-item" id="genderGirl" style="border-color:rgba(255,77,206,0.3)">
-      <div class="ai-tool-icon" style="background:linear-gradient(135deg,#ff4dce,#b44dff);font-size:26px">👩</div>
-      <div class="ai-tool-info">
-        <div class="ai-tool-name">Girl Version</div>
-        <div class="ai-tool-sub" style="color:#ff4dce">Female prompt</div>
-      </div>
-      <div class="ai-tool-arrow">→</div>
-    </div>
-    <div class="ai-tool-item" id="genderBoy" style="border-color:rgba(0,180,255,0.3)">
-      <div class="ai-tool-icon" style="background:linear-gradient(135deg,#00b4ff,#b44dff);font-size:26px">👨</div>
-      <div class="ai-tool-info">
-        <div class="ai-tool-name">Boy Version</div>
-        <div class="ai-tool-sub" style="color:#00b4ff">Male prompt</div>
-      </div>
-      <div class="ai-tool-arrow">→</div>
-    </div>
-  </div>
-</div>
-
-<!-- AI TOOL SHEET -->
-<div class="sheet-overlay" id="aiToolOverlay">
-  <div class="ai-tool-box">
-    <div class="sheet-drag"></div>
-    <div class="sheet-title" style="padding:0 0 18px">Open in AI Tool</div>
-    <div class="ai-tool-item" id="openGemini">
-      <div class="ai-tool-icon" style="overflow:hidden;padding:0;background:transparent">
-        <svg width="48" height="48" viewBox="0 0 48 48"><rect width="48" height="48" rx="14" fill="#1a1a2e"/><path d="M24 8C24 8 28 18 36 22C28 26 24 36 24 36C24 36 20 26 12 22C20 18 24 8 24 8Z" fill="url(#gemGrad)"/><defs><linearGradient id="gemGrad" x1="12" y1="8" x2="36" y2="36" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#4285f4"/><stop offset="50%" stop-color="#a78bfa"/><stop offset="100%" stop-color="#34a853"/></linearGradient></defs></svg>
-      </div>
-      <div class="ai-tool-info">
-        <div class="ai-tool-name">Gemini</div>
-        <div class="ai-tool-sub">App Available</div>
-      </div>
-      <div class="ai-tool-arrow">→</div>
-    </div>
-    <div class="ai-tool-item" id="openChatGPT">
-      <div class="ai-tool-icon" style="overflow:hidden;padding:0;background:transparent">
-        <svg width="48" height="48" viewBox="0 0 48 48"><rect width="48" height="48" rx="14" fill="#10a37f"/><path d="M24 13a4.5 4.5 0 00-4.27 3.09A4.5 4.5 0 0015 20.5c0 .28.03.55.07.82A4.5 4.5 0 0013 25a4.5 4.5 0 002.07 3.82c-.04.22-.07.46-.07.68a4.5 4.5 0 004.5 4.5c.5 0 .98-.09 1.43-.24A4.5 4.5 0 0024 35a4.5 4.5 0 003.07-1.24 4.5 4.5 0 001.43.24 4.5 4.5 0 004.5-4.5c0-.22-.03-.46-.07-.68A4.5 4.5 0 0035 25a4.5 4.5 0 00-2.07-3.68c.04-.27.07-.54.07-.82a4.5 4.5 0 00-4.73-4.5A4.5 4.5 0 0024 13zm0 2a2.5 2.5 0 012.38 1.72l.12.38.38-.12A2.5 2.5 0 0130 19.5c0 .2-.02.4-.06.58l-.09.43.4.2A2.5 2.5 0 0131.5 23h-7.5V15zm0 0v8H17a2.5 2.5 0 011.25-2.29l.4-.2-.09-.43A2.49 2.49 0 0118.5 19.5a2.5 2.5 0 013.12-2.4l.38.12.12-.38A2.5 2.5 0 0124 15zm-7.5 10H24v8a2.5 2.5 0 01-2.38-1.72l-.12-.38-.38.12A2.5 2.5 0 0118 28.5c0-.2.02-.4.06-.58l.09-.43-.4-.2A2.5 2.5 0 0116.5 25zm15 0a2.5 2.5 0 01-1.25 2.29l-.4.2.09.43c.04.18.06.38.06.58a2.5 2.5 0 01-3.12 2.4l-.38-.12-.12.38A2.5 2.5 0 0124 33v-8h7.5z" fill="white"/></svg>
-      </div>
-      <div class="ai-tool-info">
-        <div class="ai-tool-name">ChatGPT</div>
-        <div class="ai-tool-sub">App Available</div>
-      </div>
-      <div class="ai-tool-arrow">→</div>
-    </div>
-  </div>
-</div>
-
-<!-- PAGE OVERLAYS -->
-<div class="page-overlay" id="pageOverlay">
-  <div class="page-nav">
-    <div class="page-back" id="pageBackBtn">←</div>
-    <div class="page-nav-title" id="pageNavTitle"></div>
-  </div>
-  <div class="page-body" id="pageBody"></div>
 </div>
 
 <!-- SHARE SHEET -->
@@ -469,7 +327,6 @@ nav{position:sticky;top:0;z-index:200;height:58px;padding:0 16px;display:flex;al
 
 <script>
 // ===== FIREBASE INIT =====
-try {
 firebase.initializeApp({
   apiKey: "AIzaSyDhH_fplGM0SYhXYQyGEmSgsxchuUgi43I",
   authDomain: "surajfx2.firebaseapp.com",
@@ -478,7 +335,6 @@ firebase.initializeApp({
   messagingSenderId: "386646596801",
   appId: "1:386646596801:web:18bbb81f9d65ab79b28840"
 });
-} catch(e) {}
 var db = firebase.firestore();
 var INC = firebase.firestore.FieldValue.increment;
 
@@ -666,15 +522,9 @@ function toggleLike() {
 // ===== PROMPT SHEET =====
 function openPromptSheet() {
   if (!currentPrompt) return;
-  // Show Getting... animation first
-  var go = document.getElementById('gettingOverlay');
-  go.classList.add('show');
-  setTimeout(function() {
-    go.classList.remove('show');
-    document.getElementById('girlText').textContent = currentPrompt.girlPrompt || 'No prompt added.';
-    document.getElementById('boyText').textContent = currentPrompt.boyPrompt || 'No prompt added.';
-    document.getElementById('promptOverlay').classList.add('open');
-  }, 1800);
+  document.getElementById('girlText').textContent = currentPrompt.girlPrompt || 'No prompt added.';
+  document.getElementById('boyText').textContent = currentPrompt.boyPrompt || 'No prompt added.';
+  document.getElementById('promptOverlay').classList.add('open');
 }
 function closePromptSheet() {
   document.getElementById('promptOverlay').classList.remove('open');
@@ -694,115 +544,6 @@ function copyPrompt(type) {
     btn.textContent = '📋 Copy ' + (type==='girl'?'Girl':'Boy') + ' Prompt';
   }, 2000);
 }
-
-// ===== AI TOOL SHEET =====
-var selectedGender = 'girl';
-
-function openAiToolSheet() {
-  document.getElementById('promptOverlay').classList.remove('open');
-  setTimeout(function(){
-    document.getElementById('genderOverlay').classList.add('open');
-  }, 200);
-}
-function closeAiToolSheet() {
-  document.getElementById('aiToolOverlay').classList.remove('open');
-}
-function closeGenderOverlay() {
-  document.getElementById('genderOverlay').classList.remove('open');
-}
-
-document.getElementById('genderOverlay').addEventListener('click', function(e){ if(e.target===this) closeGenderOverlay(); });
-document.getElementById('aiToolOverlay').addEventListener('click', function(e){ if(e.target===this) closeAiToolSheet(); });
-
-document.getElementById('genderGirl').addEventListener('click', function() {
-  selectedGender = 'girl';
-  closeGenderOverlay();
-  setTimeout(function(){ document.getElementById('aiToolOverlay').classList.add('open'); }, 200);
-});
-document.getElementById('genderBoy').addEventListener('click', function() {
-  selectedGender = 'boy';
-  closeGenderOverlay();
-  setTimeout(function(){ document.getElementById('aiToolOverlay').classList.add('open'); }, 200);
-});
-
-document.getElementById('openGemini').addEventListener('click', function() {
-  if (!currentPrompt) return;
-  var prompt = selectedGender === 'girl'
-    ? (currentPrompt.girlPrompt || currentPrompt.boyPrompt || '')
-    : (currentPrompt.boyPrompt || currentPrompt.girlPrompt || '');
-  // Try app deep link first, fallback to web
-  var encoded = encodeURIComponent(prompt);
-  var appUrl = 'googlegeminiai://chat?text=' + encoded;
-  var webUrl = 'https://gemini.google.com/app?hl=en&prompt=' + encoded;
-  var start = Date.now();
-  window.location = appUrl;
-  setTimeout(function() {
-    if (Date.now() - start < 2000) window.open(webUrl, '_blank');
-  }, 1500);
-  closeAiToolSheet();
-});
-
-document.getElementById('openChatGPT').addEventListener('click', function() {
-  if (!currentPrompt) return;
-  var prompt = selectedGender === 'girl'
-    ? (currentPrompt.girlPrompt || currentPrompt.boyPrompt || '')
-    : (currentPrompt.boyPrompt || currentPrompt.girlPrompt || '');
-  var encoded = encodeURIComponent(prompt);
-  // Try app deep link first, fallback to web
-  var appUrl = 'chatgpt://chat?q=' + encoded;
-  var webUrl = 'https://chatgpt.com/?q=' + encoded;
-  var start = Date.now();
-  window.location = appUrl;
-  setTimeout(function() {
-    if (Date.now() - start < 2000) window.open(webUrl, '_blank');
-  }, 1500);
-  closeAiToolSheet();
-});
-
-
-document.getElementById('threeDotBtn').addEventListener('click', function(e) {
-  e.stopPropagation();
-  document.getElementById('dotMenu').classList.toggle('open');
-});
-document.addEventListener('click', function() {
-  document.getElementById('dotMenu').classList.remove('open');
-});
-document.getElementById('openAiToolBtn').addEventListener('click', openAiToolSheet);
-
-// ===== PAGE OVERLAYS =====
-var pageContent = {
-  privacy: {
-    title: 'Privacy Policy',
-    html: '<h2>Privacy Policy</h2><p>Last updated: June 2025</p><p>Prompt Galaxy ("we", "our", "us") is operated by SurajFX. We are committed to protecting your personal information and your right to privacy.</p><h2>Information We Collect</h2><p>We collect minimal information to provide our services. This includes device identifiers stored locally (via localStorage) to track liked prompts and view counts on a per-device basis. We do not collect your name, email, or any personally identifiable information unless you contact us directly.</p><h2>How We Use Your Data</h2><p>Your data is used solely to improve your experience — such as remembering your liked prompts. We do not sell, trade, or rent your data to third parties.</p><h2>Third-Party Services</h2><p>We use Firebase (Google) for data storage and Cloudinary for image hosting. These services have their own privacy policies. We may display ads via Google AdSense. Ad providers may use cookies to serve relevant ads.</p><h2>Cookies</h2><p>We use localStorage (not cookies) to save preferences. Third-party ad providers may use cookies independently.</p><h2>Contact Us</h2><p>For privacy concerns, contact us at <a href="mailto:su905072@gmail.com">su905072@gmail.com</a>.</p>'
-  },
-  terms: {
-    title: 'Terms of Service',
-    html: '<h2>Terms of Service</h2><p>Last updated: June 2025</p><p>By accessing Prompt Galaxy, you agree to these Terms. Please read them carefully.</p><h2>Use of Content</h2><p>All AI prompts on this platform are provided for personal, non-commercial use. You may copy and use prompts to generate AI images for personal or creative purposes. Reselling or redistributing our prompts as your own is not permitted.</p><h2>User Conduct</h2><p>You agree not to misuse the platform, attempt to hack or disrupt the service, or use automated bots to scrape content.</p><h2>Disclaimer</h2><p>Prompt Galaxy provides prompts "as is" without warranties of any kind. We are not responsible for images generated using our prompts by third-party AI tools.</p><h2>Changes</h2><p>We reserve the right to update these terms at any time. Continued use of the platform constitutes acceptance of the updated terms.</p><h2>Contact</h2><p>Questions? Reach us at <a href="mailto:su905072@gmail.com">su905072@gmail.com</a>.</p>'
-  },
-  about: {
-    title: 'About / Team',
-    html: '<h2>About Prompt Galaxy</h2><p>Prompt Galaxy is a free AI image prompt library created by <strong>SurajFX</strong> — a content creator and developer from West Bengal, India.</p><p>Our mission is to make high-quality AI image prompts accessible to everyone. Whether you are a creator, designer, or just exploring AI art — we have prompts for you.</p><h2>What We Offer</h2><p>Cinematic, 4K, Portrait, Anime, Fantasy, and Static prompt styles. Each prompt comes in a Girl Version and Boy Version so anyone can use them.</p><h2>The Team</h2><p><strong>Suraj</strong> — Founder, Developer & Content Creator. Runs SurajFX across Instagram, YouTube, and Telegram with a focus on AI content and editing tools.</p><p><strong>Rina</strong> — Content & Admin.</p><h2>Connect With Us</h2><p>📸 Instagram: <a href="https://instagram.com/surajfx20" target="_blank">@surajfx20</a><br>💬 Telegram: <a href="https://t.me/surajfx20" target="_blank">@surajfx20</a><br>🌐 Website: <a href="https://surajfx.in" target="_blank">surajfx.in</a></p>'
-  },
-  contact: {
-    title: 'Contact',
-    html: '<h2>Contact Us</h2><p>We would love to hear from you! Whether you have a prompt request, bug report, or collaboration idea — reach out anytime.</p><h2>Email</h2><p><a href="mailto:su905072@gmail.com">su905072@gmail.com</a></p><h2>Telegram</h2><p><a href="https://t.me/surajfx20" target="_blank">@surajfx20</a></p><h2>Instagram</h2><p><a href="https://instagram.com/surajfx20" target="_blank">@surajfx20</a></p><h2>Response Time</h2><p>We typically respond within 24–48 hours. For fastest response, message us on Telegram.</p>'
-  }
-};
-
-function openPage(key) {
-  document.getElementById('dotMenu').classList.remove('open');
-  var data = pageContent[key];
-  if (!data) return;
-  document.getElementById('pageNavTitle').textContent = data.title;
-  document.getElementById('pageBody').innerHTML = data.html;
-  document.getElementById('pageOverlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-function closePage() {
-  document.getElementById('pageOverlay').classList.remove('open');
-  document.body.style.overflow = '';
-}
-document.getElementById('pageBackBtn').addEventListener('click', closePage);
 
 // ===== SHARE =====
 function getShareUrl() {
@@ -896,11 +637,7 @@ window.addEventListener('popstate', function(){
 loadPrompts();
 </script>
 <script>
-// Force clear old service worker cache
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.getRegistrations().then(function(regs) {
-    regs.forEach(function(reg) { reg.unregister(); });
-  });
   navigator.serviceWorker.register('/sw.js').catch(function(){});
 }
 </script>
