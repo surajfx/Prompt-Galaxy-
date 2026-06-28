@@ -804,7 +804,8 @@ function closePage() {
 }
 document.getElementById('pageBackBtn').addEventListener('click', closePage);
 
-// ===== THREE DOT MENU =====
+// ===== SHARE =====
+function getShareUrl() {
   return window.location.origin + '/index.html#' + (currentPrompt ? currentPrompt.id : '');
 }
 function openShareSheet() {
