@@ -395,15 +395,32 @@ nav{position:sticky;top:0;z-index:200;height:58px;padding:0 16px;display:flex;al
     <div class="sheet-drag"></div>
     <div class="sheet-title" style="padding:0 0 18px">Open in AI Tool</div>
     <div class="ai-tool-item" id="openGemini">
-      <div class="ai-tool-icon">
-        <svg width="48" height="48" viewBox="0 0 48 48"><rect width="48" height="48" rx="14" fill="#1a1a2e"/><path d="M24 8C24 8 28 18 36 22C28 26 24 36 24 36C24 36 20 26 12 22C20 18 24 8 24 8Z" fill="url(#gGrad)"/><defs><linearGradient id="gGrad" x1="12" y1="8" x2="36" y2="36" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#4285f4"/><stop offset="50%" stop-color="#a78bfa"/><stop offset="100%" stop-color="#34a853"/></linearGradient></defs></svg>
+      <div class="ai-tool-icon" style="background:linear-gradient(135deg,#1a1a2e,#0d1117)">
+        <!-- Gemini official star logo -->
+        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+          <rect width="48" height="48" rx="14" fill="#131218"/>
+          <path d="M24 6C24 6 26.5 16 34 20C26.5 24 24 34 24 34C24 34 21.5 24 14 20C21.5 16 24 6 24 6Z" fill="url(#gem1)"/>
+          <defs>
+            <linearGradient id="gem1" x1="14" y1="6" x2="34" y2="34" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#4285F4"/>
+              <stop offset="35%" stop-color="#9C6FFF"/>
+              <stop offset="70%" stop-color="#FF6FFF"/>
+              <stop offset="100%" stop-color="#34A853"/>
+            </linearGradient>
+          </defs>
+        </svg>
       </div>
       <div class="ai-tool-info"><div class="ai-tool-name">Gemini</div><div class="ai-tool-sub">App Available</div></div>
       <div class="ai-tool-arrow">→</div>
     </div>
     <div class="ai-tool-item" id="openChatGPT">
-      <div class="ai-tool-icon">
-        <svg width="48" height="48" viewBox="0 0 48 48"><rect width="48" height="48" rx="14" fill="#10a37f"/><g transform="translate(10,10) scale(1.17)"><path d="M22.28 10.37a5.5 5.5 0 00-5.15 3.77 5.5 5.5 0 00-6.28 5.38c0 .6.1 1.18.28 1.72A5.5 5.5 0 008 25.75a5.5 5.5 0 002.53 4.67 5.5 5.5 0 005.43 6.08 5.5 5.5 0 003.57-1.32A5.5 5.5 0 0023.5 36.5a5.5 5.5 0 003.57-1.32 5.5 5.5 0 003.57 1.32 5.5 5.5 0 005.43-6.08A5.5 5.5 0 0039 25.75a5.5 5.5 0 00-2.53-4.51c.18-.54.28-1.12.28-1.72a5.5 5.5 0 00-6.28-5.38 5.5 5.5 0 00-8.19-3.77z" fill="none" stroke="white" stroke-width="1.8"/><line x1="23.5" y1="20" x2="23.5" y2="32" stroke="white" stroke-width="1.8"/><line x1="17" y1="23.5" x2="30" y2="23.5" stroke="white" stroke-width="1.8"/></g></svg>
+      <div class="ai-tool-icon" style="background:#000;border-radius:14px">
+        <!-- ChatGPT original logo - exact match -->
+        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+          <rect width="48" height="48" rx="14" fill="#000"/>
+          <path d="M36.5 19.9a8.1 8.1 0 00-.55-2.07 8.37 8.37 0 00-15.99-1.6 8.37 8.37 0 00-5.57 14.05 8.1 8.1 0 00.55 2.07 8.37 8.37 0 0015.99 1.6A8.37 8.37 0 0036.5 19.9z" stroke="#19C37D" stroke-width="1.6" fill="none"/>
+          <path d="M24 18v12M18.5 21l11 6M18.5 27l11-6" stroke="#19C37D" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
       </div>
       <div class="ai-tool-info"><div class="ai-tool-name">ChatGPT</div><div class="ai-tool-sub">App Available</div></div>
       <div class="ai-tool-arrow">→</div>
@@ -740,20 +757,44 @@ document.getElementById('genderBoy').addEventListener('click', function(){
 });
 document.getElementById('openGemini').addEventListener('click', function(){
   if (!currentPrompt) return;
-  var p = selectedGender==='girl' ? (currentPrompt.girlPrompt||currentPrompt.boyPrompt||'') : (currentPrompt.boyPrompt||currentPrompt.girlPrompt||'');
+  var p = selectedGender==='girl'
+    ? (currentPrompt.girlPrompt || currentPrompt.boyPrompt || '')
+    : (currentPrompt.boyPrompt || currentPrompt.girlPrompt || '');
   var enc = encodeURIComponent(p);
-  var t = Date.now();
-  window.location.href = 'googlegeminiai://chat?text=' + enc;
-  setTimeout(function(){ if(Date.now()-t < 2000) window.open('https://gemini.google.com/app?hl=en', '_blank'); }, 1500);
+  // Try app deep link, fallback to web with prompt
+  var iframe = document.createElement('iframe');
+  iframe.style.display = 'none';
+  document.body.appendChild(iframe);
+  var appOpened = false;
+  window.addEventListener('blur', function(){ appOpened = true; }, {once:true});
+  iframe.src = 'googlegeminiai://chat?text=' + enc;
+  setTimeout(function(){
+    document.body.removeChild(iframe);
+    if (!appOpened) {
+      window.open('https://gemini.google.com/app?hl=en#chat/' + enc, '_blank');
+    }
+  }, 1200);
   document.getElementById('aiToolOverlay').classList.remove('open');
 });
 document.getElementById('openChatGPT').addEventListener('click', function(){
   if (!currentPrompt) return;
-  var p = selectedGender==='girl' ? (currentPrompt.girlPrompt||currentPrompt.boyPrompt||'') : (currentPrompt.boyPrompt||currentPrompt.girlPrompt||'');
+  var p = selectedGender==='girl'
+    ? (currentPrompt.girlPrompt || currentPrompt.boyPrompt || '')
+    : (currentPrompt.boyPrompt || currentPrompt.girlPrompt || '');
   var enc = encodeURIComponent(p);
-  var t = Date.now();
-  window.location.href = 'chatgpt://chat?q=' + enc;
-  setTimeout(function(){ if(Date.now()-t < 2000) window.open('https://chatgpt.com/?q=' + enc, '_blank'); }, 1500);
+  // Try app deep link, fallback to web with prompt in URL
+  var iframe = document.createElement('iframe');
+  iframe.style.display = 'none';
+  document.body.appendChild(iframe);
+  var appOpened = false;
+  window.addEventListener('blur', function(){ appOpened = true; }, {once:true});
+  iframe.src = 'chatgpt://chat?q=' + enc;
+  setTimeout(function(){
+    document.body.removeChild(iframe);
+    if (!appOpened) {
+      window.open('https://chatgpt.com/?q=' + enc, '_blank');
+    }
+  }, 1200);
   document.getElementById('aiToolOverlay').classList.remove('open');
 });
 document.getElementById('openAiToolBtn').addEventListener('click', openAiToolSheet);
