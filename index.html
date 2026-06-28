@@ -469,6 +469,7 @@ nav{position:sticky;top:0;z-index:200;height:58px;padding:0 16px;display:flex;al
 
 <script>
 // ===== FIREBASE INIT =====
+try {
 firebase.initializeApp({
   apiKey: "AIzaSyDhH_fplGM0SYhXYQyGEmSgsxchuUgi43I",
   authDomain: "surajfx2.firebaseapp.com",
@@ -477,6 +478,7 @@ firebase.initializeApp({
   messagingSenderId: "386646596801",
   appId: "1:386646596801:web:18bbb81f9d65ab79b28840"
 });
+} catch(e) {}
 var db = firebase.firestore();
 var INC = firebase.firestore.FieldValue.increment;
 
@@ -893,7 +895,11 @@ window.addEventListener('popstate', function(){
 loadPrompts();
 </script>
 <script>
+// Force clear old service worker cache
 if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then(function(regs) {
+    regs.forEach(function(reg) { reg.unregister(); });
+  });
   navigator.serviceWorker.register('/sw.js').catch(function(){});
 }
 </script>
