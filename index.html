@@ -756,24 +756,7 @@ document.getElementById('genderBoy').addEventListener('click', function(){
   setTimeout(function(){ document.getElementById('aiToolOverlay').classList.add('open'); }, 250);
 });
 document.getElementById('openGemini').addEventListener('click', function(){
-  if (!currentPrompt) return;
-  var p = selectedGender==='girl'
-    ? (currentPrompt.girlPrompt || currentPrompt.boyPrompt || '')
-    : (currentPrompt.boyPrompt || currentPrompt.girlPrompt || '');
-  var enc = encodeURIComponent(p);
-  // Android Intent URL for Gemini app
-  var intentUrl = 'intent://gemini.google.com/app?hl=en#Intent;scheme=https;package=com.google.android.apps.bard;S.browser_fallback_url=https%3A%2F%2Fgemini.google.com%2Fapp%3Fhl%3Den;end';
-  var appOpened = false;
-  window.addEventListener('blur', function(){ appOpened = true; }, {once:true});
-  window.location.href = intentUrl;
-  setTimeout(function(){
-    if (!appOpened) {
-      window.open('https://gemini.google.com/app?hl=en', '_blank');
-    }
-  }, 1500);
-  // Copy prompt to clipboard so user can paste in Gemini
-  navigator.clipboard.writeText(p).catch(function(){});
-  showToast('Prompt copied! Paste in Gemini 📋');
+  window.open('https://gemini.google.com/app', '_blank');
   document.getElementById('aiToolOverlay').classList.remove('open');
 });
 document.getElementById('openChatGPT').addEventListener('click', function(){
